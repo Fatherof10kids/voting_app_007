@@ -1,0 +1,237 @@
+<html>
+<head>
+    <title>Bootstrap 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Indie+Flower">
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Jim+Nightshade">
+     <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Pavanam">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!--JQuery is put before bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--Then Bootstrap script-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    </head>
+    
+    <style>
+    
+        .navbar{
+            background-color: cadetblue;
+            margin-bottom: 0;
+        }
+        
+        .navbar-inverse .nav > li > a {
+        color : #e6ccff;
+        }
+        
+        .navbar-inverse .navbar-header> a {
+        color : #e6ccff;
+        }
+        
+        .navHeaderCollapse>.nav>li.active a {
+            background: orchid;
+        }
+        .navHeaderCollapse>.nav>li.active a:hover {
+            background: #ff99ff;
+        }
+        
+        /*Vote Slogan*/
+        
+        .vote-slogan{
+            padding-top: 120px;
+            padding-bottom: 50px;;
+            text-align: center;
+            background-color: skyblue;
+        }
+        
+        .vote-slogan strong{
+            font-size: 3em;
+        }
+        
+        .vote-slogan p{
+            font-size: 2em;
+        }
+        
+        .vote-slogan button {
+            display: inline;
+        }
+        
+        
+        
+        /*Marketing*/
+        
+        .marketing{
+            display: none;
+            margin-top: 15px;
+        }
+        
+        .row .col-md-4{
+            text-align: center;
+        }
+        
+        .row .col-md-4 p{
+            font-size: 2em;
+        }
+        
+        /*Font Awesome*/
+        
+        #bolt{
+            color: #e6d600;
+        }
+        
+        #globe{
+            color: #00bfff;
+        }
+        
+        #facebook{
+            color:  #99ff33;
+        }
+        
+        #signupform{
+            display: none;
+            margin-top: 15px;
+        }
+        #loginform{
+            display: block;
+            margin-top: 15px;
+        }
+        
+        .button{
+            margin-top: 10px;
+            border: 1px 1px cyan;
+            background-color: aquamarine;
+        }
+        
+    </style>
+    
+    
+    <script>
+        $(document).ready(()=>{
+            
+            $('#btnSignUp').click(function(){
+                $(this).css('display','none');
+                $('.marketing').css('display','none');
+                $('#loginform').css('display','none');
+                $('#signupform').css('display','block');
+                history.pushState('','','signup'); 
+            });
+            
+            $('#signup-nav').click(function(){
+                $('#homeButton').removeClass('active');
+                $('#login-nav').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                $('.marketing').css('display','none');
+                $('#loginform').css('display','none');
+                $('#signupform').css('display','block');
+               history.pushState('','','signup'); 
+            });
+            $('#login-nav').click(function(){
+                $('#homeButton').removeClass('active');
+                $('#signup-nav').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                $('.marketing').css('display','none');
+                $('#signupform').css('display','none');
+                $('#loginform').css('display','block'); 
+                history.pushState('','','login'); 
+            });
+            
+            $('#homeButton').click(()=>{
+                $('#homeButton').addClass('active');
+                $('#signup-nav').parent().removeClass('active');
+                $('#login-nav').parent().removeClass('active');
+                $('.marketing').css('display','block');
+                $('#signupform').css('display','none');
+                $('#loginform').css('display','none');
+                window.location.replace("/"); 
+            });
+            
+            
+            // validate field before post to server
+            
+            
+            
+        });
+    
+    </script>
+    
+<body>
+    
+ <div class="navbar navbar-inverse navbar-static-top">
+     <div class="container">
+         <div class="navbar-header">
+            <a class="navbar-brand">EasyVote</a>
+         
+         <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+        
+        </div>
+         <div class="collapse navbar-collapse navHeaderCollapse">
+                <ul class="nav navbar-nav navbar-left">
+                <li class="active" id="homeButton"><a>Home</a></li>
+                </ul>
+             <ul class="nav navbar-nav navbar-right">
+                 
+                
+                <li><a id="signup-nav">Sign up</a></li>
+                <li><a id="login-nav">Login</a></li>
+                 
+             </ul>
+         
+         </div>
+     
+     </div>  
+</div>
+    
+    <section class="vote-slogan">
+        <strong>EasyVote</strong>
+        <p>Create custom polls with live results</p>
+        <button class="btn btn-primary" id="btnSignUp">Sign Up</button>
+    </section>
+    
+    
+    <!--End Vote Slogan-->
+    
+    <article class="marketing">
+        <div class="row">
+        <div class="col-md-4"><i class="fa fa-bolt fa-5x" id="bolt"></i><p>Live Results</p>Live graphs show your poll results immediately in an easy to understand format. One graph will not provide the whole picture, that's why we provide multiple graph types to better describe your results.</div>
+        <div class="col-md-4"><i class="fa fa-globe fa-5x" id="globe"></i><p>Works everywhere</p>Traditional desktop computers now represent only 30% of Internet traffic. Your poll must work on the tablets, smart phones, netbooks and notebooks that your visitors are using. Our responsive designs do just that.</div>
+        <div class="col-md-4"><i class="fa fa-facebook fa-5x" id="facebook"></i><p>Social Integration</p>Free integrated facebook or traditional comments allow your poll voters to provide immediate feedback and discuss results. Social share buttons encourage your poll voters to help spread the word.</div>
+        </div>
+    </article>
+    
+    <form action="/signup" method="post" class="container" id="signupform">
+        <p>Username:</p>
+        <input class="form-control" type="text" name="username" >
+        <p>Email:</p>
+        <input class="form-control" type="email" name="email" >
+         <p>Password:</p>
+        <input class="form-control" type="password" name="pass" >
+        
+        <input class="button" type="submit" value="Sign Up" id="subSign" >
+        
+    </form>
+    
+    <form action="/login" method="post" class="container" id="loginform">
+        <p>Email:</p>
+        <input class="form-control" type="email" name="email" >
+         <p>Password:</p>
+        <input class="form-control" type="password" name="pass" >
+        
+        <input class="button" type="submit" value="Log In" id="subLog">
+        
+    </form>
+
+    
+</body>
+
+    
+</html>

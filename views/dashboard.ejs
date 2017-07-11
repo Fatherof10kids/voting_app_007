@@ -1,0 +1,287 @@
+<html>
+<head>
+    <title>Bootstrap 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Indie+Flower">
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Jim+Nightshade">
+     <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Pavanam">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!--JQuery is put before bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--Then Bootstrap script-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    </head>
+
+    <style>
+
+        .navbar{
+            background-color: cadetblue;
+            margin-bottom: 0;
+        }
+
+        .navbar-inverse .nav > li > a {
+        color : #e6ccff;
+        }
+
+        .navbar-inverse .navbar-header> a {
+        color : #e6ccff;
+        }
+
+        .navHeaderCollapse>.nav>li.active a {
+            background: orchid;
+        }
+        .navHeaderCollapse>.nav>li.active a:hover {
+            background: #ff99ff;
+        }
+
+        /*Vote Slogan*/
+
+        .vote-slogan{
+            padding-top: 120px;
+            padding-bottom: 50px;;
+            text-align: center;
+            background-color: skyblue;
+        }
+
+        .vote-slogan strong{
+            font-size: 3em;
+        }
+
+        .vote-slogan p{
+            font-size: 2em;
+        }
+
+        .vote-slogan button {
+            display: inline;
+        }
+
+
+
+        /*Poll*/
+
+        .newpoll{
+            display: block;
+            margin-top: 15px;
+            text-align: center;
+            margin-bottom: 100px;
+            width: 50%;
+            left: 25%;
+            position: relative;
+        }
+
+        .newpoll :nth-child(1) strong {
+            font-size: 3em;
+        }
+
+
+
+        .button{
+            margin-top: 10px;
+            border: 1px 1px cyan;
+            background-color: aquamarine;
+        }
+
+        footer{
+          bottom: 0;
+          position: fixed;
+          background-color: pink;
+          width: 100%;
+          padding: 5px 0px 0px 0px;
+          font-size: 0.8em;
+        }
+
+
+        /*my Polls handling*/
+
+        .mypoll{
+            margin-top:20px;
+            display: none;
+            width: 50%;
+            left: 25%;
+            position: relative;
+            margin-bottom: 50px;
+        }
+
+        span{
+            font-size: 1.2em;
+        }
+
+        .poll-item{
+            background-color: lightpink;
+        }
+
+
+
+    </style>
+
+
+    <script>
+        $(document).ready(()=>{
+
+            $('#btnSignUp').click(function(){
+                $(this).css('display','none');
+                $('.marketing').css('display','none');
+                $('#loginform').css('display','none');
+                $('#signupform').css('display','block');
+                history.pushState('','','signup');
+            });
+
+            $('#signup-nav').click(function(){
+                $('#homeButton').removeClass('active');
+                $('#login-nav').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                $('.marketing').css('display','none');
+                $('#loginform').css('display','none');
+                $('#signupform').css('display','block');
+               history.pushState('','','signup');
+            });
+            $('#login-nav').click(function(){
+                $('#homeButton').removeClass('active');
+                $('#signup-nav').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                $('.marketing').css('display','none');
+                $('#signupform').css('display','none');
+                $('#loginform').css('display','block');
+                history.pushState('','','login');
+            });
+
+            $('#homeButton').click(()=>{
+                $('#homeButton').addClass('active');
+                $('#signup-nav').parent().removeClass('active');
+                $('#login-nav').parent().removeClass('active');
+                $('.marketing').css('display','block');
+                $('#signupform').css('display','none');
+                $('#loginform').css('display','none');
+                window.location.replace("/");
+            });
+            $('#option-nav').click(()=>{
+              window.location.href='/settings';
+            });
+
+            $('#logout-nav').click(()=>{
+               window.location.href='/logout';
+            });
+
+            //edit the button control in expand options
+
+            $('#moreOptions').click(()=>{
+                $('#expandOptions').append('<input class="form-control option" type="text" placeholder="new option"></input>');
+            });
+
+            $('#newPollButt').click(()=>{
+                $('.newpoll').css('display','block');
+                $('.mypoll').css('display','none');
+            });
+
+            $('#myPollButt').click(()=>{
+                $('.newpoll').css('display','none');
+                $('.mypoll').css('display','block');
+            });
+
+            // validate fields before posting to server
+            $('#submitOptions').click(function(){
+              var optionData = {};
+            //  console.log($(this));
+              $('.option').each(function(index,DOMObject){
+              //  console.log($(this));  // no giong boi vi arrow function does not bind "this" lexical binding
+                //optionData[$(DOMObject).val()]=0; still okie
+                optionData[$(this).val()]=0;
+              });
+              console.log(optionData);
+              // pollname
+            var pollName = $('#pollName').val();
+            var data = {
+              title: pollName,
+              options: optionData
+            }
+            // post to server
+            $.post( "http://localhost:5000/optiondata", data );
+            });
+
+        });
+
+    </script>
+
+<body>
+
+ <div class="navbar navbar-inverse navbar-static-top">
+     <div class="container">
+         <div class="navbar-header">
+            <a class="navbar-brand">EasyVote</a>
+
+         <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+        </div>
+         <div class="collapse navbar-collapse navHeaderCollapse">
+                <ul class="nav navbar-nav navbar-left">
+                <li class="active" id="homeButton"><a>Home</a></li>
+                </ul>
+             <ul class="nav navbar-nav navbar-right">
+
+                 <li><a>Hello <%= username %> </a></li>
+                 <li><a id="option-nav"><i class="fa fa-gear"></i></a></li>
+                <li><a id="logout-nav">Logout</a></li>
+             </ul>
+         </div>
+     </div>
+</div>
+
+    <section class="vote-slogan">
+        <strong>Dashboard</strong>
+        <p>What would you like to do today?</p>
+        <button class="btn btn-success" id="newPollButt">New Poll</button>
+        <button class="btn btn-info" id="myPollButt">My Polls</button>
+    </section>
+
+
+    <!--End Vote Slogan-->
+
+    <section class="newpoll">
+        <p><strong>New Poll</strong></p>
+        <p><strong>Name your poll.</strong></p>
+        <input class="form-control" type="text" placeholder="What is your favorite brand?" id="pollName"></input>
+        <p><strong>Options:</strong></p>
+        <section id="expandOptions">
+        <input class="form-control option" type="text" placeholder="Coke"></input>
+        <input class="form-control option" type="text" placeholder="Pepsi"></input>
+        </section>
+        <button class="btn btn-default" id="moreOptions">More Options</button>
+        <button class="btn btn-info" id="submitOptions">Submit</button>
+    </section>
+
+
+    <section class="mypoll">
+        <div class="poll-item">
+        <div class="row">
+        <div class="col-md-10"><span>This is my text</span></div>
+        <div class="col-md-2"><button class="btn btn-danger" id="deletePoll">delete</button></div>
+        </div>
+        </div>
+        <div class="poll-item">
+        <div class="row">
+        <div class="col-md-10"><span>This is your text</span></div>
+        <div class="col-md-2"><button class="btn btn-danger" id="deletePoll">delete</button></div>
+        </div>
+        </div>
+
+    </section>
+
+<footer>
+ <p>This site is created by ManhDung Corp &copy; 2017</p>
+</footer>
+
+</body>
+
+
+</html>

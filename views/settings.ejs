@@ -1,0 +1,209 @@
+<html>
+<head>
+    <title>Bootstrap 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Indie+Flower">
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Jim+Nightshade">
+     <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Pavanam">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!--JQuery is put before bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--Then Bootstrap script-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    </head>
+
+    <style>
+
+        .navbar{
+            background-color: cadetblue;
+            margin-bottom: 0;
+        }
+
+        .navbar-inverse .nav > li > a {
+        color : #e6ccff;
+        }
+
+        .navbar-inverse .navbar-header> a {
+        color : #e6ccff;
+        }
+
+        .navHeaderCollapse>.nav>li.active a {
+            background: orchid;
+        }
+        .navHeaderCollapse>.nav>li.active a:hover {
+            background: #ff99ff;
+        }
+
+
+
+
+        .button{
+            margin-top: 10px;
+            border: 1px 1px cyan;
+            background-color: aquamarine;
+        }
+
+        footer{
+          bottom: 0;
+          position: fixed;
+          background-color: pink;
+          width: 100%;
+          padding: 5px 0px 0px 0px;
+          font-size: 0.8em;
+        }
+
+        strong {
+            font-size: 2em;
+        }
+
+        .container.settings{
+            margin-top: 40px;
+        }
+
+        #savePass{
+            margin-top: 15px;
+        }
+
+    </style>
+
+
+    <script>
+        $(document).ready(()=>{
+
+            $('#btnSignUp').click(function(){
+                $(this).css('display','none');
+                $('.marketing').css('display','none');
+                $('#loginform').css('display','none');
+                $('#signupform').css('display','block');
+                history.pushState('','','signup');
+            });
+
+            $('#signup-nav').click(function(){
+                $('#homeButton').removeClass('active');
+                $('#login-nav').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                $('.marketing').css('display','none');
+                $('#loginform').css('display','none');
+                $('#signupform').css('display','block');
+               history.pushState('','','signup');
+            });
+            $('#login-nav').click(function(){
+                $('#homeButton').removeClass('active');
+                $('#signup-nav').parent().removeClass('active');
+                $(this).parent().addClass('active');
+                $('.marketing').css('display','none');
+                $('#signupform').css('display','none');
+                $('#loginform').css('display','block');
+                history.pushState('','','login');
+            });
+
+            $('#homeButton').click(()=>{
+                $('#homeButton').addClass('active');
+                $('#signup-nav').parent().removeClass('active');
+                $('#login-nav').parent().removeClass('active');
+                $('.marketing').css('display','block');
+                $('#signupform').css('display','none');
+                $('#loginform').css('display','none');
+                window.location.replace("/");
+            });
+
+            $('#option-nav').click(()=>{
+              window.location.href='/settings';
+            });
+
+            $('#logout-nav').click(()=>{
+               window.location.href='/logout';
+            });
+
+            //edit the button control in expand options
+
+            $('#moreOptions').click(()=>{
+                $('#expandOptions').append('<input class="form-control" type="text" placeholder="new option"></input>');
+            });
+
+          // change pass
+          $('#savePass').click(function(){
+            var data = {
+              currentPass : $('#currPass').val(),
+              newPass: $('#newPass').val()
+            };
+            $.ajax({
+            type: 'GET',
+            data: data,
+            contentType: 'application/json',
+            url: 'http://localhost:5000/settings',
+            success: function(data){
+              if(data.hasOwnProperty('error')){
+                alert('incorrect password!');
+              }
+              else if(data.hasOwnProperty('success')){
+                //console.log(data);
+                alert('Password has changed!');
+              }
+            }
+          });
+          });
+
+
+
+
+        // do not delete after this
+        });
+    </script>
+
+<body>
+
+ <div class="navbar navbar-inverse navbar-static-top">
+     <div class="container">
+         <div class="navbar-header">
+            <a class="navbar-brand">EasyVote</a>
+
+         <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+        </div>
+         <div class="collapse navbar-collapse navHeaderCollapse">
+                <ul class="nav navbar-nav navbar-left">
+                <li class="active" id="homeButton"><a>Home</a></li>
+                </ul>
+             <ul class="nav navbar-nav navbar-right">
+
+
+                 <li><a>Hello <%= username %> </a></li>
+                 <li><a id="option-nav"><i class="fa fa-gear"></i></a></li>
+                <li><a id="logout-nav">Logout</a></li>
+
+             </ul>
+
+         </div>
+
+     </div>
+</div>
+
+    <section class="container settings">
+        <p><strong>Change Password</strong></p>
+        <p>Current Password</p>
+        <input class="form-control" type="password" id="currPass">
+        <p>New Password</p>
+        <input class="form-control" type="password" id="newPass">
+        <button class="btn btn-primary" id="savePass">Save changes</button>
+    </section>
+
+<footer>
+ <p>This site created by ManhDung Corp &copy; 2017</p>
+</footer>
+
+</body>
+
+
+</html>
