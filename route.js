@@ -208,6 +208,12 @@ route.delete('/:poll',requireLogin,(req,res)=>{
 });
 
 
+// vote route
+route.get('/:username/:poll_title',(req,res)=>{ // have problem if it has 2 similar username and poll name
+  mongoClient.connect(url,(e,db)=>{})
+})
+
+
 
 
 route.get('/logout',(req,res)=>{
