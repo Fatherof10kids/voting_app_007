@@ -7,8 +7,8 @@ var route = express.Router();
 route.use(session({
   secret: '2C44-4D44-100mealohasecretmather',
   resave: false,
-  saveUninitialized: false,
-  cookie: { maxAge: 60000 }
+  saveUninitialized: false/*,
+  cookie: { maxAge: 60000 }*/ // 1 minutes are you kidding me?
 }));
 
 var sess;
@@ -26,7 +26,7 @@ route.post('/signup',(req,res)=>{
     var collection = db.collection('users');
     collection.find({email:in_email}).toArray((err,docs)=>{  // db contain collections, collection comprise of docs document
       if(docs.length==0){
-        collection.insertOne({username: in_username,email:in_email,password:in_password,poll:['']},(e,result)=>{
+        collection.insertOne({username: in_username,email:in_email,password:in_password,poll:[]},(e,result)=>{
           if(e) throw e;
             res.redirect('/login');
             db.close();
@@ -149,20 +149,66 @@ route.post('/optiondata',requireLogin,(req,res)=>{
     var collection = db.collection('users');
     collection.findOne({email:req.session.email}).then((doc)=>{
       data = doc.poll;
+      var str= req.body.title;
+      // remove ? / : "" in the poll title
+      var regex = /[^a-zA-Z0-9 ]/g;
+      str=str.replace(regex,'');
+      // remove white space at the end of the string if it has any
+      if(str.search(/\s{1,}$/g)>0){
+        str= str.substr(0,str.search(/\s{1,}$/g));// search return index
+      }
+      req.body.title=str;
       data.push(req.body);
       console.log(data);
       collection.findAndModify({email: req.session.email},[],{ $set: { poll : data} },{ // [poll] is field varible, mongo understand it as variable
           remove:false // upsert is defined as operation that "creates a new document when no document matches the query criteria"
         }).then((doc)=>{
         console.log("successfully updated poll to database!");
-        console.log("result is: ");
-        console.log(doc);
+        var uri_reference = req.body.title.replace(/ {1,}/g,''); // 1 or more space is remove from req.body.title
+        res.json({url: req.protocol + '://' +req.get('host')+'/'+req.session.username +'/' + uri_reference});
         db.close();
       });
     });
 
   });
 });
+
+// get my poll
+route.get('/mypoll',requireLogin,(req,res)=>{
+  mongoClient.connect(url,(e,db)=>{
+    var data;
+    var collection = db.collection('users');
+    collection.findOne({email:req.session.email}).then((doc)=>{
+      data = doc.poll;
+      res.json(data);
+      db.close();
+    });
+  });
+});
+
+
+// detele poll
+
+route.delete('/:poll',requireLogin,(req,res)=>{
+  console.log("poll that delete");
+  console.log(req.params.poll);
+    mongoClient.connect(url,(err,db)=>{
+      var col = db.collection('users');
+      col.findOne({email:req.session.email}).then((doc)=>{
+            var pollData = doc.poll;
+
+            var newPollData = pollData.filter(function(val,index){ return val.title != req.params.poll});
+            col.findAndModify({email:req.session.email},[],{$set:{ poll: newPollData}},{remove:false}).then((doc)=>{
+              console.log("successfully deleted poll!");
+              res.json({message:"successfully deleted poll!"});
+              db.close();
+            })
+      })
+    });
+});
+
+
+
 
 route.get('/logout',(req,res)=>{
     req.session.destroy((e)=>{

@@ -107,22 +107,39 @@
             left: 25%;
             position: relative;
             margin-bottom: 50px;
+
         }
 
-        span{
+        .mypoll span{
+            margin-left: 15px;
             font-size: 1.2em;
         }
 
         .poll-item{
             background-color: lightpink;
+            border: 2px solid pink;
+            border-radius: 25px;
         }
 
-
+        /*Congratulation your poll has been posted to*/
+        .result{
+          text-align: center;
+          margin-top: 25px;
+          font-size: 1.5em;
+        }
 
     </style>
 
 
     <script>
+            // grandparent selector
+            $.fn.gparent = function( recursion ){
+            //console.log( 'recursion: ' + recursion );
+          if( recursion > 1 ) return $(this).parent().gparent( recursion - 1 );
+          return $(this).parent();
+            };
+
+
         $(document).ready(()=>{
 
             $('#btnSignUp').click(function(){
@@ -183,6 +200,29 @@
             $('#myPollButt').click(()=>{
                 $('.newpoll').css('display','none');
                 $('.mypoll').css('display','block');
+                $('.mypoll').html('');
+                $.getJSON('/mypoll',(data)=>{  //  or url http://localhost:5000/mypoll
+                  //console.log(data);
+                    for(var i =0; i<data.length;i++){
+                      // append to mypoll class
+                    $('.mypoll').append('<div class="poll-item"><div class="row"><div class="col-md-10"><span>'+data[i].title+'</span></div><div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div></div>');
+                  };
+
+                });
+            });
+
+            // delete poll-item
+            $('.mypoll').on('click','.deletePoll',function(){
+              var mess= $(this).gparent(2).children(":first").children(":first").text();
+              // ajax type DELETE to server with '/mess'
+              //console.log(mess);
+              $.ajax({
+                url: '/'+mess,
+                type: 'DELETE',
+                success: function(res){
+                  console.log(res.message);
+                }
+              });
             });
 
             // validate fields before posting to server
@@ -202,8 +242,17 @@
               options: optionData
             }
             // post to server
-            $.post( "http://localhost:5000/optiondata", data );
+            //change url later
+            $.post( "/optiondata", data).done(function(resData){
+              $('.newpoll').css('display','none');
+              $('.mypoll').css('display','none');
+              $('body').append('<section class="result"><p><strong>Congratulations!</strong></p><p>Your poll has been posted to</p><p><a href="'+resData.url+'" target="_blank">'+resData.url+'</a></p></section>')
             });
+
+
+            });
+
+
 
         });
 
@@ -265,13 +314,13 @@
         <div class="poll-item">
         <div class="row">
         <div class="col-md-10"><span>This is my text</span></div>
-        <div class="col-md-2"><button class="btn btn-danger" id="deletePoll">delete</button></div>
+        <div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div>
         </div>
         </div>
         <div class="poll-item">
         <div class="row">
         <div class="col-md-10"><span>This is your text</span></div>
-        <div class="col-md-2"><button class="btn btn-danger" id="deletePoll">delete</button></div>
+        <div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div>
         </div>
         </div>
 
