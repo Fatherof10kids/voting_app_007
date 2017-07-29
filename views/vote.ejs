@@ -1,0 +1,318 @@
+<html>
+<head>
+    <title>Bootstrap 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Indie+Flower">
+    <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Jim+Nightshade">
+     <link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Pavanam">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <!--JQuery is put before bootstrap-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!--Then Bootstrap script-->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--Chart js mdn-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.bundle.js">
+</script>
+
+    </head>
+
+    <style>
+
+        .navbar{
+            background-color: cadetblue;
+            margin-bottom: 0;
+        }
+
+        .navbar-inverse .nav > li > a {
+        color : #e6ccff;
+        }
+
+        .navbar-inverse .navbar-header> a {
+        color : #e6ccff;
+        }
+
+        .navHeaderCollapse>.nav>li.active a {
+            background: orchid;
+        }
+        .navHeaderCollapse>.nav>li.active a:hover {
+            background: #ff99ff;
+        }
+
+        /*Vote Slogan*/
+
+        .vote-slogan{
+            padding-top: 120px;
+            padding-bottom: 50px;;
+            text-align: center;
+            background-color: skyblue;
+        }
+
+        .vote-slogan strong{
+            font-size: 3em;
+        }
+
+        .vote-slogan p{
+            font-size: 2em;
+        }
+
+        .vote-slogan button {
+            display: inline;
+        }
+
+
+
+
+
+        .button{
+            margin-top: 10px;
+            border: 1px 1px cyan;
+            background-color: aquamarine;
+        }
+
+        footer{
+          bottom: 0;
+          position: fixed;
+          background-color: pink;
+          width: 100%;
+          padding: 5px 0px 0px 0px;
+          font-size: 0.8em;
+        }
+
+
+        /*Voting section*/
+        .voting-section{
+            margin-top: 20px;
+            margin-bottom: 50px;
+            font-size:1.5em;
+            display: block;
+        }
+
+
+        /*Polls list*/
+
+        .polls{
+            padding-left: 20%;
+        }
+
+        .option{
+            margin-top: 0;
+            width :70%;
+        }
+
+        .option p{
+            background-color: lightsalmon;
+            border: 1px solid pink;
+            border-radius: 5px;
+            margin: -1;
+        }
+
+        .vote-button{
+            margin-top: 15px;
+        }
+
+        .graph{
+            margin-top:20px;
+            margin-bottom: 100px;
+        }
+
+    </style>
+
+
+    <script>
+
+        //var data =[{'halo':'5'},{'besty':'10'}];
+
+        var drawChart = function(data){ // data options {"key" :value, "key":value}
+
+            if(data !=null){
+            var labelsArr = Object.keys(data.options);
+            var voteData=[];
+            labelsArr.forEach(function(element){
+              voteData.push(data.options[element]);
+            });
+            var ctx = $("#myBarChart");
+            var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+        labels: labelsArr,
+        datasets: [{
+            label : 'votes', //legend display false in option :)
+            data: voteData,
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+            }]
+        },
+        options: {
+            legend: {
+            display: false
+        },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero:true,
+                        stepSize:1
+                    }
+                }]
+            },
+            responsive: false
+        }
+            });
+
+            } // end of if
+        };
+
+        $(document).ready(()=>{
+
+            $('#homeButton').click(()=>{
+                window.location.replace("/");
+            });
+            $('#option-nav').click(()=>{
+              window.location.href='/settings';
+            });
+
+            $('#logout-nav').click(()=>{
+               window.location.href='/logout';
+            });
+
+            $('#submitVote').click(function(){
+
+                //ajax // send info to server
+
+                if(!$("input[name='option']:checked").val()){ // if it is not checked
+                   alert('nothing is checked!');
+                    return false;
+                }
+                else{ // else it is checked!
+                    //alert('One of radio button is checked');
+                    // send to server
+                   // console.log($("input[name='option']:checked").parent().children(':nth-child(2)').text());
+                    var option = $("input[name='option']:checked").parent().children(':nth-child(2)').text();
+                    var data = {data: option};
+                    var user = $('#who').text();
+                    var pollTitle =  $('#title').text();
+                  /*  console.log(user);
+                    console.log(pollTitle);*/
+                    $.ajax({
+                       url: '/'+user+'/'+pollTitle,
+                        type: 'PUT',
+                        dataType: "json", // tell jquery what kind of response to expect
+                        data: data, // data should be json format
+                        success: function(data){
+                            console.log(data);
+                            // pollName
+                            $("#pollName").text(data.title);
+                            //show chart
+                            drawChart(data);
+
+                        }
+                    });
+                    // hide option block
+                   $('.voting-section').css('display','none');
+
+                }
+
+            })
+
+
+
+
+        });
+
+    </script>
+
+<body>
+
+ <div class="navbar navbar-inverse navbar-static-top">
+     <div class="container">
+         <div class="navbar-header">
+            <a class="navbar-brand">EasyVote</a>
+
+         <button class="navbar-toggle" data-toggle="collapse" data-target=".navHeaderCollapse">
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+
+        </div>
+         <div class="collapse navbar-collapse navHeaderCollapse">
+                <ul class="nav navbar-nav navbar-left">
+                <li class="active" id="homeButton"><a>Home</a></li>
+                </ul>
+             <ul class="nav navbar-nav navbar-right">
+
+                 <li><a>Hello <%= who %> </a></li>
+
+             </ul>
+         </div>
+     </div>
+</div>
+
+    <section class="vote-slogan">
+        <strong>EasyVote</strong>
+        <p>Simply click Vote to see a magic!</p>
+    </section>
+
+
+    <!--End Vote Slogan-->
+    <section class="voting-section container">
+        <div class="row">
+
+            <div class="col-md-2"> <p id="title"><%= poll.title %></p> by <p id="who"><%= poll.who %></p></div>
+            <div class="col-md-8 polls">
+                <div class="option"> <!--if radio button has same name, it is the choice and only check once and only-->
+                    <!--<p><input type="radio" style="margin-right:30px;" name="option"><span>option1</span></p>
+                <p><input type="radio" style="margin-right:30px;" name="option"><span>option2</span></p>
+                <p><input type="radio" style="margin-right:30px;" name="option"><span>option3</span></p>-->
+<!--if name=value yo means that check that option-->
+                <!--EJS template-->
+
+                    <% for(var i =0;i<= 1;i++){ %>
+                    <p><input type="radio" style="margin-right:30px;" name="option">
+                    <span><%= Object.keys(poll.options)[i] %></span>
+                    </p>
+                    <%}%>
+
+
+
+                </div>
+                <input type="button" class="btn btn-info vote-button" value="Vote!" id="submitVote">
+            </div>
+            <div class="col-md-2">No comment yet!</div>
+        </div>
+
+    </section>
+
+
+        <section class="graph">
+
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <p id="pollName" style="font-size:2em; text-align:center;"></p>
+                <canvas id="myBarChart" width="400" height="300">Your Browser doesnt support canvas
+                </canvas>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+        </section>
+
+
+
+
+
+<footer>
+ <p>This site is created by ManhDung Corp &copy; 2017</p>
+</footer>
+
+</body>
+
+
+</html>

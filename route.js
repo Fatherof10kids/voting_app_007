@@ -8,14 +8,14 @@ route.use(session({
   secret: '2C44-4D44-100mealohasecretmather',
   resave: false,
   saveUninitialized: false/*,
-  cookie: { maxAge: 60000 }*/ // 1 minutes are you kidding me?
+  cookie: { maxAge: 60000 } // 1 minutes are you kidding me?*/
 }));
 
 var sess;
 
 
 // mongo client url
-var url = 'mongodb://localhost:27017/account';
+var url = process.env.MONGODB_URI || 'mongodb://localhost:27017/account';
 
 // body parser that handle the form data. Only need to save username password and gmail here to database and greet the user
 route.post('/signup',(req,res)=>{
@@ -209,10 +209,55 @@ route.delete('/:poll',requireLogin,(req,res)=>{
 
 
 // vote route
-route.get('/:username/:poll_title',(req,res)=>{ // have problem if it has 2 similar username and poll name
-  mongoClient.connect(url,(e,db)=>{})
-})
+route.get('/:username/:poll_title',(req,res)=>{ // have problem if it has 2 similar username and poll name //ajax call
+  mongoClient.connect(url,(e,db)=>{
+    var col = db.collection('users');
+    col.findOne({username: req.params.username}).then((doc)=>{
+        var resData = doc.poll.filter(function(el){
+          return el.title.split(" ").join('')==req.params.poll_title;});
+        /*console.log("first resData")
+        console.log(resData[0]);*/
+        resData[0].who = req.params.username;
+        /*console.log(resData);*/
+        //res.json(resData);
+        if(!req.session||!req.session.email){
+        res.render('vote.ejs',{who:"Stranger" ,poll:resData[0]});
+      }
+        else{
+        res.render('vote.ejs',{who: req.session.username, poll: resData[0]});
+      }
+        db.close();
+    });
+  })
+});
 
+var update = function(arr,title,option){ // function update poll when we click vote
+  for( var i in arr){
+    if(arr[i].title == title){  //when ajax call poll_title is spacy string means "word word word word" not "wordWordWord" there's no need to remove space between word
+      arr[i].options[option] = +arr[i].options[option] +1;
+      return arr[i]; // poll thats just updated!
+      break;
+    }
+  }
+};
+
+// vote from user or Stranger
+route.put('/:username/:poll_title',(req,res)=>{ // have problem if it has 2 similar username and poll name //ajax call
+  mongoClient.connect(url,(e,db)=>{
+    var col = db.collection('users');
+    col.findOne({username: req.params.username}).then((doc)=>{
+        var responsePoll = update(doc.poll,req.params.poll_title,req.body.data);
+      /*  console.log("req body data")
+        console.log(req.body.data);*/
+        col.findAndModify({username:req.params.username},[],{$set:{ poll: doc.poll}},{remove:false}).then((doc)=>{
+          console.log("successfully updated poll!");
+          res.json(responsePoll);
+          db.close();
+        });
+
+    });
+  })
+});
 
 
 

@@ -17,6 +17,10 @@
     <!--Then Bootstrap script-->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+    <!--Chart js mdn-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.bundle.js">
+</script>
+
     </head>
 
     <style>
@@ -128,10 +132,58 @@
           font-size: 1.5em;
         }
 
+        .graph{
+            margin-top:20px;
+            margin-bottom: 100px;
+            display: none;
+        }
+
     </style>
 
 
     <script>
+              //chart js
+              var drawChart = function(data){ // data options {"key" :value, "key":value}
+
+                  if(data !=null){
+                  var labelsArr = Object.keys(data.options);
+                  var voteData=[];
+                  labelsArr.forEach(function(element){
+                    voteData.push(data.options[element]);
+                  });
+                  var ctx = $("#myBarChart");
+                  var myChart = new Chart(ctx, {
+              type: 'bar',
+              data: {
+              labels: labelsArr,
+              datasets: [{
+                  label : 'votes', //legend display false in option :)
+                  data: voteData,
+                  backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                  borderColor: 'rgba(75, 192, 192, 1)',
+                  borderWidth: 1
+                  }]
+              },
+              options: {
+                  legend: {
+                  display: false
+              },
+                  scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true,
+                              stepSize:1
+                          }
+                      }]
+                  },
+                  responsive: false
+              }
+                  });
+
+                  } // end of if
+              };
+
+
             // grandparent selector
             $.fn.gparent = function( recursion ){
             //console.log( 'recursion: ' + recursion );
@@ -139,6 +191,8 @@
           return $(this).parent();
             };
 
+            // save all mypoll data in clinet
+            var allPollData;
 
         $(document).ready(()=>{
 
@@ -193,26 +247,55 @@
             });
 
             $('#newPollButt').click(()=>{
+              //visual
+              $('.result').remove();
+              $('.graph').css('display','none');
                 $('.newpoll').css('display','block');
                 $('.mypoll').css('display','none');
             });
 
             $('#myPollButt').click(()=>{
+              //visual
+              $('.result').remove();
+              $('.graph').css('display','none');
                 $('.newpoll').css('display','none');
                 $('.mypoll').css('display','block');
                 $('.mypoll').html('');
                 $.getJSON('/mypoll',(data)=>{  //  or url http://localhost:5000/mypoll
                   //console.log(data);
+                  //save data to client
+                  allPollData = data;
                     for(var i =0; i<data.length;i++){
                       // append to mypoll class
-                    $('.mypoll').append('<div class="poll-item"><div class="row"><div class="col-md-10"><span>'+data[i].title+'</span></div><div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div></div>');
+                    $('.mypoll').append('<div class="poll-item"><div class="row"><div class="col-md-10"><span class="chartTitle">'+data[i].title+'</span></div><div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div></div>');
                   };
 
                 });
             });
 
+            // show chart when click mypoll
+                $(".mypoll").on('click','.poll-item',function(){
+                  //visual
+                  $('.result').remove();
+                  //console.log($(this).find('.chartTitle').text());
+                  var clickedTitle = $(this).find('.chartTitle').text();
+                  var chartData = allPollData.filter(function(ele){ return ele.title == clickedTitle;});
+                  console.log(chartData);
+                  //draw chartData
+                  // hide mypoll
+                    $('.mypoll').css('display','none');
+                    $('.graph').css('display','block');
+
+                    // pollName
+                    $('#pollTitle').text(chartData[0].title);
+                  drawChart(chartData[0]); // passed in object, not array
+                });
+
             // delete poll-item
             $('.mypoll').on('click','.deletePoll',function(){
+
+
+
               var mess= $(this).gparent(2).children(":first").children(":first").text();
               // ajax type DELETE to server with '/mess'
               //console.log(mess);
@@ -313,17 +396,31 @@
     <section class="mypoll">
         <div class="poll-item">
         <div class="row">
-        <div class="col-md-10"><span>This is my text</span></div>
+        <div class="col-md-10"><span class="chartTitle">This is my text</span></div>
         <div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div>
         </div>
         </div>
         <div class="poll-item">
         <div class="row">
-        <div class="col-md-10"><span>This is your text</span></div>
+        <div class="col-md-10"><span class="chartTitle">This is your text</span></div>
         <div class="col-md-2"><button class="btn btn-danger deletePoll">delete</button></div>
         </div>
         </div>
 
+    </section>
+
+
+    <section class="graph">
+
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <p id="pollTitle" style="font-size:2em; text-align:center;"></p>
+            <canvas id="myBarChart" width="400" height="300">Your Browser doesnt support canvas
+            </canvas>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
     </section>
 
 <footer>
