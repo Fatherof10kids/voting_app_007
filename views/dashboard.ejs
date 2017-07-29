@@ -144,7 +144,10 @@
     <script>
               //chart js
               var drawChart = function(data){ // data options {"key" :value, "key":value}
-
+              // three line of codes below guarantee " When you create one new chart.js canvas, this generate one new iframe hidden, you need delete the canvas and the olds iframes."
+              $('#myBarChart').remove();
+              $('iframe.chartjs-hidden-iframe').remove();
+              $('#pollTitle').append('<canvas id="myBarChart" width="400" height="300">Your Browser doesnt support canvas</canvas>');
                   if(data !=null){
                   var labelsArr = Object.keys(data.options);
                   var voteData=[];
