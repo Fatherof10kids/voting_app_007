@@ -293,17 +293,19 @@
 
             // delete poll-item
             $('.mypoll').on('click','.deletePoll',function(){
-
+              $('.graph').css('display','none');
 
 
               var mess= $(this).gparent(2).children(":first").children(":first").text();
               // ajax type DELETE to server with '/mess'
               //console.log(mess);
+              var $self = $(this);
               $.ajax({
                 url: '/'+mess,
                 type: 'DELETE',
                 success: function(res){
                   console.log(res.message);
+                  $self.gparent(3).remove();
                 }
               });
             });
