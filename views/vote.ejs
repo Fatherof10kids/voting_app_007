@@ -274,7 +274,7 @@
 <!--if name=value yo means that check that option-->
                 <!--EJS template-->
 
-                    <% for(var i =0;i<= 1;i++){ %>
+                    <% for(var i =0;i<= Object.keys(poll.options).length ;i++){ %>
                     <p><input type="radio" style="margin-right:30px;" name="option">
                     <span><%= Object.keys(poll.options)[i] %></span>
                     </p>
