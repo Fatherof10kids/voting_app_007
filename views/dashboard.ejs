@@ -274,7 +274,7 @@
             });
 
             // show chart when click mypoll
-                $(".mypoll").on('click','.row',function(){
+                $(".mypoll").on('click','.col-md-10',function(){
                   //visual
                   $('.result').remove();
                   //console.log($(this).find('.chartTitle').text());
@@ -293,7 +293,6 @@
 
             // delete poll-item
             $('.mypoll').on('click','.deletePoll',function(){
-              $('.graph').css('display','none');
 
 
               var mess= $(this).gparent(2).children(":first").children(":first").text();
